@@ -36,6 +36,6 @@ When you initialize a BaseGame object, you must call `BaseGame(firefox=False)`
 
 ### Acknowledgements
 
-I found a spreadsheet of coordinates from @Zhinjio on discord which I've added to and utilized.
+I was provided a spreadsheet of coordinates from https://github.com/Zhinjio on discord which I've added to and utilized.
 
 I'll be adding features as I progress through the game.
