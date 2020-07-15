@@ -4,14 +4,12 @@ import os
 import numpy as np
 import cv2
 from mss.darwin import MSS as mss
-
-if __name__ == "__main__":
-    from positions import get_position_dict
-else:
-    from .positions import get_position_dict
+from functools import reduce
+import operator
+from .positions import get_position_dict
 
 # pag.PAUSE = 0.25
-pag.PAUSE = 0.25
+pag.PAUSE = 0.5
 pag.FAILSAFE = True
 
 
@@ -27,12 +25,15 @@ class BaseGame:
     def __init__(self):
         self._locate_reference()
         _, _, self.coords = get_position_dict()
+        self._add_inventory_positions()
 
     def _shift(self, coord):
         return list(np.add(coord, self.reference))
 
     def _focus_window(self):
         os.system("open -a firefox")
+        pag.move([10, 10])
+        pag.move([-10, -10])
 
     def _locate_reference(self):
         self._focus_window()
@@ -47,95 +48,58 @@ class BaseGame:
         result = cv2.matchTemplate(needle, haystack, cv2.TM_CCOEFF_NORMED)
         match_indices = np.arange(result.size)[(result > 0.95).flatten()]
         matches = np.unravel_index(match_indices[:100], result.shape)
-        # BUG when on rebirth screen, how to handle multiple matches
         os.remove(filename)
-        self.reference = [
-            int((matches[1] + needleWidth / 2) / 2) - 10,
-            int((matches[0] + needleHeight / 2) / 2) - 10,
-        ]
+        if len(matches[0]) > 1:
+            self.reference = [
+                int((np.array(matches[1][0]) + needleWidth / 2) / 2) - 10,
+                int((np.array(matches[0][0]) + needleHeight / 2) / 2) - 10,
+            ]
+        else:
+            self.reference = [
+                int((matches[1] + needleWidth / 2) / 2) - 10,
+                int((matches[0] + needleHeight / 2) / 2) - 10,
+            ]
+        # print(self.reference)
 
-    def _getpath(self, value, prepath=()):
-        for k, v in self.coords.items():
-            path = prepath + (k,)
-            if k == value:  # found value
-                return path
-            elif hasattr(v, "items"):  # v is a dict
-                p = self._getpath(v, value, path)  # recursive call
-                if p is not None:
-                    return p
+    def _search(self, haystack, needle, path=None):
+        if path is None:
+            path = []
+        if needle in haystack:
+            path.append(needle)
+            return path
+        for k, v in haystack.items():
+            if isinstance(v, dict):
+                result = self._search(v, needle, path + [k])
+                if result is not None:
+                    return result
+
+    def _getFromDict(self, mapList):
+        return reduce(operator.getitem, mapList, self.coords)
 
     def click(self, x, traverse=False):
-        path = self._getpath(x)
-        coord = self.coords
+        path = self._search(self.coords, x)
         if traverse:
-            for item in path[:-1]:
-                pag.click(coord[item]["Button"])
-                coord = coord[item]
-        pag.click(coord[path[-1]]["Button"])
+            for i in range(1, len(path)):
+                ppath = path[:i]
+                pag.click(self._shift(self._getFromDict(ppath)["Button"]))
+        pag.click(self._shift(self._getFromDict(path)["Button"]))
 
     def move(self, x, traverse=False):
-        path = self._getpath(x)
-        coord = self.coords
+        path = self._search(self.coords, x)
         if traverse:
-            for item in path[:-1]:
-                pag.click(coord[item]["Button"])
-                coord = coord[item]
-        pag.moveTo(coord[path[-1]]["Button"])
+            for i in range(1, len(path)):
+                ppath = path[:i]
+                pag.click(self._shift(self._getFromDict(ppath)["Button"]))
+        pag.moveTo(self._shift(self._getFromDict(path)["Button"]))
 
-    # def _get_rebirth_locs(self):
-    #     """
-    #     Gets rebirth button locations.
-    #     TODO difficulty and checking "Crap_To_Do"
-    #     """
-    #     self.coords["Rebirth"] = {}
-    #     self.coords["Rebirth"]["Rebirth"] = list(
-    #         np.array([540, 510]) + np.array(self.reference)
-    #     )
-    #     self.coords["Rebirth"]["Yes"] = list(
-    #         np.array([430, 305]) + np.array(self.reference)
-    #     )
-    #     self.coords["Rebirth"]["No"] = list(
-    #         np.array([500, 305]) + np.array(self.reference)
-    #     )
-
-    # def _get_inventory_locs(self):
-    #     """
-    #     Gets Inventory locations.
-    #     TODO Multiple inventory pages
-    #     """
-    #     self.coords["Inventory"] = {}
-    #     equip_grid = np.array(
-    #         [
-    #             [
-    #                 np.array([465, 50])
-    #                 + np.array(self.reference)
-    #                 + np.array([50 * i, 50 * j])
-    #                 for i in range(4)
-    #             ]
-    #             for j in range(4)
-    #         ]
-    #     )
-    #     matching_inds = [(0, 0), (1, 0), (0, 1), (1, 1), (2, 1),
-    #           (3, 1), (1, 2), (1, 3)]
-    #     for i in range(len(matching_inds)):
-    #         self.coords["Inventory"][self.inventorynames[i]] = list(
-    #             equip_grid[matching_inds[i]]
-    #         )
-    #     inventory_grid = np.array(
-    #         [
-    #             [
-    #                 np.array([340, 320])
-    #                 + np.array(self.reference)
-    #                 + np.array([50 * i, 50 * j])
-    #                 for i in range(12)
-    #             ]
-    #             for j in range(4)
-    #         ]
-    #     )
-    #     for i in range(4):
-    #         if i < 3:
-    #             for j in range(12):
-    #                 self.coords["Inventory"][f"{i}_{j}"] = list(inventory_grid[i, j])
-    #         else:  # I dont have all the slots yet
-    #             for j in range(6):
-    #                 self.coords["Inventory"][f"{i}_{j}"] = list(inventory_grid[i, j])
+    def _add_inventory_positions(self):
+        """
+        Gets Inventory locations.
+        TODO Multiple inventory pages
+        """
+        x, y = self.coords["Inventory"]["0_0"]["Button"]
+        for i in range(6):
+            for j in range(13):
+                self.coords["Inventory"][f"{i}_{j}"] = {
+                    "Button": [x + j * 50, y + i * 50]
+                }

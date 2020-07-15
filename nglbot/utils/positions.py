@@ -4,14 +4,30 @@ import pprint
 
 
 def get_position_dict(printme=False):
-    # TODO state detection
-    # TODO inputs
+    #     # TODO state detection
+    #     # TODO inputs
     state_detection, inputs, buttons = split_positions()
-    buttons_clean = prep(buttons)
 
+    #     state_detection_clean = prep(state_detection)
     state_detection_dict = {}
+    #     for row in state_detection_clean.values:
+    #         depth = 0
+    #         for key in row[1:3]:
+    #             if key != "":
+    #                 depth += 1
+    #         if depth == 0:
+    #             state_detection_dict[row[0]] = {"Button": [row[-2], row[-1]]}
+    #         if depth == 1:
+    #             state_detection_dict[row[0]][row[1]] = {"Button": [row[-2], row[-1]]}
+    #         if depth == 2:
+    #             state_detection_dict[row[0]][row[1]][row[2]] = {
+    #                 "Button": [row[-2], row[-1]]
+    #             }
+    #     if printme:
+    #         pprint.pprint(state_detection_dict)
     inputs_dict = {}
 
+    buttons_clean = prep(buttons)
     buttons_dict = {}
     for row in buttons_clean.values:
         depth = 0

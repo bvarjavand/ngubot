@@ -15,7 +15,8 @@ def explore_dict(game, coords):
                 explore_dict(game, coords[i[0]])
             else:
                 print(i[0])
-                pag.move(game._shift(i[1]["Button"]))
+                print(i[1])
+                pag.moveTo(game._shift(i[1]["Button"]))
 
 
 def main():
@@ -23,7 +24,7 @@ def main():
     try:
         for arg in args.search:
             if arg in ["SaveGame", "LoadGame"]:
-                pag.move(game._shift(game.coords[arg]["Button"]))
+                pag.moveTo(game._shift(game.coords[arg]["Button"]))
             else:
                 pag.click(game._shift(game.coords[arg]["Button"]))
                 explore_dict(game, game.coords[arg])
