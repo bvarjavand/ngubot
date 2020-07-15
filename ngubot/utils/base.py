@@ -1,12 +1,22 @@
-# import time
 import pyautogui as pag
 import os
 import numpy as np
 import cv2
-from mss.darwin import MSS as mss  # If using windows, change to mss.windows
 from functools import reduce
 import operator
 from .positions import get_position_dict
+import platform
+
+system = platform.system()
+if system == "Darwin":
+    from mss.darwin import MSS as mss  # MacOS X
+elif system == "Windows":
+    from mss.windows import MSS as mss  # Microsoft Windows
+elif system == "Linux":
+    from mss.linux import MSS as mss  # GNU/Linux
+else:
+    raise OSError(f"You are using {system}, an os I wasn't expecting. Let me know.")
+
 
 pag.PAUSE = 0.5
 pag.FAILSAFE = True
@@ -21,7 +31,9 @@ class BaseGame:
     Most pressing TODO's are Adventure Attack Buttons and Blood Magic Buttons
     """
 
-    def __init__(self):
+    def __init__(self, firefox=True):
+        self.mac = system == "Darwin"
+        self.firefox = firefox
         self._locate_reference()
         _, _, self.coords = get_position_dict()
         self._add_inventory_positions()
@@ -34,12 +46,12 @@ class BaseGame:
         pag.move([10, 10])
         pag.move([-10, -10])
 
-    # you may need to use _click_focus() instead of _focus_window()
     def _click_focus(self):
         pag.click(self.reference)
 
     def _locate_reference(self):
-        self._focus_window()
+        if self.firefox:
+            self._focus_window()
         with mss() as sct:
             filename = sct.shot(mon=-1)
 
@@ -51,18 +63,22 @@ class BaseGame:
         match_indices = np.arange(result.size)[(result > 0.95).flatten()]
         matches = np.unravel_index(match_indices[:100], result.shape)
         os.remove(filename)
-        # you may be off by a factor of 2, so remove the second "/2"
-        if len(matches[0]) > 1:
-            self.reference = [
-                int((np.array(matches[1][0]) + needleWidth / 2) / 2) - 10,
-                int((np.array(matches[0][0]) + needleHeight / 2) / 2) - 10,
-            ]
+
+        if len(matches[0]) > 1:  # multiple matches, we take the first one
+            matchx = np.array(matches[1][0]) + needleWidth / 2
+            matchy = np.array(matches[0][0]) + needleHeight / 2
         else:
-            self.reference = [
-                int((matches[1] + needleWidth / 2) / 2) - 10,
-                int((matches[0] + needleHeight / 2) / 2) - 10,
-            ]
-        # self._click_focus()
+            matchx = np.array(matches[1]) + needleWidth / 2
+            matchy = np.array(matches[0]) + needleHeight / 2
+        if self.mac:  # double resolution for some reason
+            matchx /= 2
+            matchy /= 2
+        self.reference = [
+            int(matchx) - 10,
+            int(matchy) - 10,
+        ]
+        if not self.firefox:
+            self._click_focus()
         # print(self.reference)
 
     def _search(self, haystack, needle, path=None):
