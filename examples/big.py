@@ -1,4 +1,4 @@
-from nglbot.utils.base import BaseGame
+from ngubot.utils.base import BaseGame
 
 game = BaseGame()
 game._focus_window()

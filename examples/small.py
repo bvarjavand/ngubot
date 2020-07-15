@@ -1,4 +1,4 @@
-from nglbot.utils.base import BaseGame
+from ngubot.utils.base import BaseGame
 import pyautogui as pag
 import time
 
@@ -50,12 +50,6 @@ def clean(game):
 
 
 while True:
-    # 0, 0
-    game.click("Feed Me", True)
-    game.click("Really", True)
-    game.click("RebirthYeah", False)
-
-    time.sleep(1)
     game.click("IdleAttackPlus", True)
 
     clean(game)
@@ -123,7 +117,8 @@ while True:
     clean(game)
 
     pag.press("r")
-    game.click("PowerPlus", True)
+    game.click("Adv. Training", False)
+    game.click("PowerPlus", False)
     pag.press("t")
     game.click("CutsPlus")
 
@@ -132,7 +127,7 @@ while True:
     game._focus_window()
 
     clean(game)
-
+    # 0, 0
     game.click("Feed Me", True)
     game.click("Really", True)
     game.click("RebirthYeah", False)

@@ -1,4 +1,4 @@
-from nglbot.utils.base import BaseGame
+from ngubot.utils.base import BaseGame
 
 if __name__ == "__main__":
     game = BaseGame()

@@ -1,4 +1,4 @@
-from nglbot.utils.base import BaseGame
+from ngubot.utils.base import BaseGame
 import pyautogui as pag
 
 import argparse
