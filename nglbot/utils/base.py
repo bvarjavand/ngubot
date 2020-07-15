@@ -1,14 +1,13 @@
-import time
+# import time
 import pyautogui as pag
 import os
 import numpy as np
 import cv2
-from mss.darwin import MSS as mss
+from mss.darwin import MSS as mss  # If using windows, change to mss.windows
 from functools import reduce
 import operator
 from .positions import get_position_dict
 
-# pag.PAUSE = 0.25
 pag.PAUSE = 0.5
 pag.FAILSAFE = True
 
@@ -35,11 +34,12 @@ class BaseGame:
         pag.move([10, 10])
         pag.move([-10, -10])
 
+    # you may need to use _click_focus() instead of _focus_window()
     def _click_focus(self):
         pag.click(self.reference)
 
     def _locate_reference(self):
-        # self._focus_window()
+        self._focus_window()
         with mss() as sct:
             filename = sct.shot(mon=-1)
 
@@ -51,6 +51,7 @@ class BaseGame:
         match_indices = np.arange(result.size)[(result > 0.95).flatten()]
         matches = np.unravel_index(match_indices[:100], result.shape)
         os.remove(filename)
+        # you may be off by a factor of 2, so remove the second "/2"
         if len(matches[0]) > 1:
             self.reference = [
                 int((np.array(matches[1][0]) + needleWidth / 2) / 2) - 10,
@@ -61,7 +62,7 @@ class BaseGame:
                 int((matches[1] + needleWidth / 2) / 2) - 10,
                 int((matches[0] + needleHeight / 2) / 2) - 10,
             ]
-        self._click_focus()
+        # self._click_focus()
         # print(self.reference)
 
     def _search(self, haystack, needle, path=None):
