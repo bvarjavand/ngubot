@@ -3,21 +3,19 @@
 I built this bot while waiting for my game to progress. As the bot started functioning I was afforded more time to work on the bot.  
 This is the result.
 
-Currently it works optimally on a Mac running the game on Kongregate, using Firefox.
-Suboptimal performance on a Mac with a different browser, or a Windows on any browser.
-There are alternatives for Windows in the #scripting channel in the NGU Discord.
+Currently it works on Mac and Windows, and Linux/GNU.
+
+Ideally you are using Mac/Linus with Firefox.
+Otherwise, you have to keep the top left part of the window in the foreground of your desktop/second monitor.
 
 ### Installation
 
-Simply clone this directory, and type
-`pip install -e .`.
+clone this directory `git clone https://github.com/bvarjavand/ngubot.git`
+cd into it `cd ngubot`
+install the package `pip install -e .`
 
 ### Setting up
-Simply take a screenshot of the tep-left corder of the game and save it as `ngl-bot/utils/reference.png`.
-
-#### I dont have Firefox, or I am using Windows
-I've tested this with a friend's windows computer and added comments to `ngubot/utils/base.py` describing what changes need to be made.
-You won't 
+Screenshot the tep-left corner of the game and overwrite `ngl-bot/utils/reference.png`.
 
 ### Usage
 
