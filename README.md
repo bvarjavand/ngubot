@@ -11,9 +11,12 @@ Otherwise, you have to keep the top left part of the window in the foreground of
 
 ### Installation
 
-clone this directory `git clone https://github.com/bvarjavand/ngubot.git`
-cd into it `cd ngubot`
-install the package `pip install -e .`
+clone this directory, cd into it, and install the package:
+```
+git clone https://github.com/bvarjavand/ngubot.git
+cd ngubot
+pip install -e .
+```
 
 ### Setting up
 
