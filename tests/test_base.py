@@ -1,4 +1,4 @@
-from ..ngl_runner.utils.base import BaseGame
+from nglbot.utils.base import BaseGame
 import pyautogui as pag
 
 import argparse

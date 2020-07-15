@@ -60,81 +60,82 @@ class BaseGame:
             if k == value:  # found value
                 return path
             elif hasattr(v, "items"):  # v is a dict
-                p = getpath(v, value, path)  # recursive call
+                p = self._getpath(v, value, path)  # recursive call
                 if p is not None:
                     return p
 
-    def click(x, traverse=False):
+    def click(self, x, traverse=False):
         path = self._getpath(x)
         coord = self.coords
         if traverse:
             for item in path[:-1]:
                 pag.click(coord[item]["Button"])
-                coord = coord[iten]
+                coord = coord[item]
         pag.click(coord[path[-1]]["Button"])
 
-    def move(x, traverse=False):
+    def move(self, x, traverse=False):
         path = self._getpath(x)
         coord = self.coords
         if traverse:
             for item in path[:-1]:
                 pag.click(coord[item]["Button"])
-                coord = coord[iten]
+                coord = coord[item]
         pag.moveTo(coord[path[-1]]["Button"])
 
-    def _get_rebirth_locs(self):
-        """
-        Gets rebirth button locations.
-        TODO difficulty and checking "Crap_To_Do"
-        """
-        self.coords["Rebirth"] = {}
-        self.coords["Rebirth"]["Rebirth"] = list(
-            np.array([540, 510]) + np.array(self.reference)
-        )
-        self.coords["Rebirth"]["Yes"] = list(
-            np.array([430, 305]) + np.array(self.reference)
-        )
-        self.coords["Rebirth"]["No"] = list(
-            np.array([500, 305]) + np.array(self.reference)
-        )
+    # def _get_rebirth_locs(self):
+    #     """
+    #     Gets rebirth button locations.
+    #     TODO difficulty and checking "Crap_To_Do"
+    #     """
+    #     self.coords["Rebirth"] = {}
+    #     self.coords["Rebirth"]["Rebirth"] = list(
+    #         np.array([540, 510]) + np.array(self.reference)
+    #     )
+    #     self.coords["Rebirth"]["Yes"] = list(
+    #         np.array([430, 305]) + np.array(self.reference)
+    #     )
+    #     self.coords["Rebirth"]["No"] = list(
+    #         np.array([500, 305]) + np.array(self.reference)
+    #     )
 
-    def _get_inventory_locs(self):
-        """
-        Gets Inventory locations.
-        TODO Multiple inventory pages
-        """
-        self.coords["Inventory"] = {}
-        equip_grid = np.array(
-            [
-                [
-                    np.array([465, 50])
-                    + np.array(self.reference)
-                    + np.array([50 * i, 50 * j])
-                    for i in range(4)
-                ]
-                for j in range(4)
-            ]
-        )
-        matching_inds = [(0, 0), (1, 0), (0, 1), (1, 1), (2, 1), (3, 1), (1, 2), (1, 3)]
-        for i in range(len(matching_inds)):
-            self.coords["Inventory"][self.inventorynames[i]] = list(
-                equip_grid[matching_inds[i]]
-            )
-        inventory_grid = np.array(
-            [
-                [
-                    np.array([340, 320])
-                    + np.array(self.reference)
-                    + np.array([50 * i, 50 * j])
-                    for i in range(12)
-                ]
-                for j in range(4)
-            ]
-        )
-        for i in range(4):
-            if i < 3:
-                for j in range(12):
-                    self.coords["Inventory"][f"{i}_{j}"] = list(inventory_grid[i, j])
-            else:  # I dont have all the slots yet
-                for j in range(6):
-                    self.coords["Inventory"][f"{i}_{j}"] = list(inventory_grid[i, j])
+    # def _get_inventory_locs(self):
+    #     """
+    #     Gets Inventory locations.
+    #     TODO Multiple inventory pages
+    #     """
+    #     self.coords["Inventory"] = {}
+    #     equip_grid = np.array(
+    #         [
+    #             [
+    #                 np.array([465, 50])
+    #                 + np.array(self.reference)
+    #                 + np.array([50 * i, 50 * j])
+    #                 for i in range(4)
+    #             ]
+    #             for j in range(4)
+    #         ]
+    #     )
+    #     matching_inds = [(0, 0), (1, 0), (0, 1), (1, 1), (2, 1),
+    #           (3, 1), (1, 2), (1, 3)]
+    #     for i in range(len(matching_inds)):
+    #         self.coords["Inventory"][self.inventorynames[i]] = list(
+    #             equip_grid[matching_inds[i]]
+    #         )
+    #     inventory_grid = np.array(
+    #         [
+    #             [
+    #                 np.array([340, 320])
+    #                 + np.array(self.reference)
+    #                 + np.array([50 * i, 50 * j])
+    #                 for i in range(12)
+    #             ]
+    #             for j in range(4)
+    #         ]
+    #     )
+    #     for i in range(4):
+    #         if i < 3:
+    #             for j in range(12):
+    #                 self.coords["Inventory"][f"{i}_{j}"] = list(inventory_grid[i, j])
+    #         else:  # I dont have all the slots yet
+    #             for j in range(6):
+    #                 self.coords["Inventory"][f"{i}_{j}"] = list(inventory_grid[i, j])
