@@ -35,9 +35,11 @@ class BaseGame:
         pag.move([10, 10])
         pag.move([-10, -10])
 
+    def _click_focus(self):
+        pag.click(self.reference)
+
     def _locate_reference(self):
-        self._focus_window()
-        time.sleep(2)
+        # self._focus_window()
         with mss() as sct:
             filename = sct.shot(mon=-1)
 
@@ -59,6 +61,7 @@ class BaseGame:
                 int((matches[1] + needleWidth / 2) / 2) - 10,
                 int((matches[0] + needleHeight / 2) / 2) - 10,
             ]
+        self._click_focus()
         # print(self.reference)
 
     def _search(self, haystack, needle, path=None):
