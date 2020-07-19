@@ -3,6 +3,18 @@ import os
 import pprint
 
 
+def _add_inventory_positions(coords):
+    """
+    Gets Inventory locations.
+    TODO Multiple inventory pages
+    """
+    x, y = coords["Inventory"]["1_1"]["Button"]
+    for i in range(5):
+        for j in range(12):
+            coords["Inventory"][f"{i+1}_{j+1}"] = {"Button": [x + j * 50, y + i * 50]}
+    return coords
+
+
 def get_position_dict(printme=False):
     #     # TODO state detection
     #     # TODO inputs
@@ -40,6 +52,7 @@ def get_position_dict(printme=False):
             buttons_dict[row[0]][row[1]] = {"Button": [row[-2], row[-1]]}
         if depth == 2:
             buttons_dict[row[0]][row[1]][row[2]] = {"Button": [row[-2], row[-1]]}
+    buttons_dict = _add_inventory_positions(buttons_dict)
     if printme:
         pprint.pprint(buttons_dict)
     return state_detection_dict, inputs_dict, buttons_dict
@@ -50,10 +63,11 @@ def split_positions():
     df = pd.read_excel(positions, header=None, usecols=list(range(2, 8)),)
     df = df.fillna("")
     state_detection = df.iloc[4:31]
-    inputs = df.iloc[31:60]
+    # inputs = df.iloc[31:60]
+    inputs = []
     # print(state_detection.head())
     # print(inputs.head())
-    buttons = df.iloc[60:]
+    buttons = df.iloc[31:]
     return state_detection, inputs, buttons
 
 

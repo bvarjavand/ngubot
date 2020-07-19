@@ -18,7 +18,7 @@ else:
     raise OSError(f"You are using {system}, an os I wasn't expecting. Let me know.")
 
 
-pag.PAUSE = 0.5
+pag.PAUSE = 0.2
 pag.FAILSAFE = True
 
 
@@ -31,12 +31,13 @@ class BaseGame:
     Most pressing TODO's are Adventure Attack Buttons and Blood Magic Buttons
     """
 
-    def __init__(self, firefox=True):
+    def __init__(self, firefox=True, locate=True):
         self.mac = system == "Darwin"
         self.firefox = firefox
-        self._locate_reference()
+        self.reference = [0, 0]
+        if locate:
+            self._locate_reference()
         _, _, self.coords = get_position_dict()
-        self._add_inventory_positions()
 
     def _shift(self, coord):
         return list(np.add(coord, self.reference))
@@ -93,6 +94,18 @@ class BaseGame:
                 if result is not None:
                     return result
 
+    def _search_value(self, haystack, needle, path=None):
+        if path is None:
+            path = []
+        if needle in haystack:
+            path.append(haystack[needle]["Button"])
+            return path
+        for k, v in haystack.items():
+            if isinstance(v, dict):
+                result = self._search_value(v, needle, path + [v["Button"]])
+                if result is not None:
+                    return result
+
     def _getFromDict(self, mapList):
         return reduce(operator.getitem, mapList, self.coords)
 
@@ -111,15 +124,3 @@ class BaseGame:
                 ppath = path[:i]
                 pag.click(self._shift(self._getFromDict(ppath)["Button"]))
         pag.moveTo(self._shift(self._getFromDict(path)["Button"]))
-
-    def _add_inventory_positions(self):
-        """
-        Gets Inventory locations.
-        TODO Multiple inventory pages
-        """
-        x, y = self.coords["Inventory"]["0_0"]["Button"]
-        for i in range(6):
-            for j in range(13):
-                self.coords["Inventory"][f"{i}_{j}"] = {
-                    "Button": [x + j * 50, y + i * 50]
-                }

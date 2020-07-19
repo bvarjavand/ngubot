@@ -28,8 +28,8 @@ def main():
             else:
                 pag.click(game._shift(game.coords[arg]["Button"]))
                 explore_dict(game, game.coords[arg])
-    except ValueError:
-        print(f"{args.search} not one of {['All'] + list(all, game.coords.keys())}")
+    except KeyError:
+        print(f"{args.search} not one of {['All'] + list(game.coords.keys())}")
 
 
 if __name__ == "__main__":
