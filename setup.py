@@ -19,7 +19,7 @@ setuptools.setup(
         "numpy==1.19.0",
         "opencv-python==4.3.0.36",
         "pandas==1.0.5",
-        "Pillow==7.2.0",
+        "Pillow==9.0.0",
         "PyAutoGUI==0.9.50",
         "PyGetWindow==0.0.8",
         "PyMsgBox==1.0.8",
