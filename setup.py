@@ -16,7 +16,7 @@ setuptools.setup(
     install_requires=[
         "MouseInfo==0.1.3",
         "mss==6.0.0",
-        "numpy==1.19.0",
+        "numpy==1.22.0",
         "opencv-python==4.3.0.36",
         "pandas==1.0.5",
         "Pillow==7.2.0",
